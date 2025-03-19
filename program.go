@@ -20,16 +20,19 @@ type program struct {
 	stopFunc func()
 }
 
+// NewProgram returns a new program
 func NewProgram(ctx context.Context, f func() error) *program {
-	return &program{mainFunc: f}
+	return &program{mainFunc: f, ctx: ctx}
 }
 
-func (p *program) Init(f func() error) {
+func (p *program) Init(f func() error) *program {
 	p.initFunc = f
+	return p
 }
 
-func (p *program) Stop(f func()) {
+func (p *program) Stop(f func()) *program {
 	p.stopFunc = f
+	return p
 }
 
 func (p *program) start() error {
@@ -65,6 +68,9 @@ func (p *program) run() error {
 
 	close(p.quit)
 	p.wg.Wait()
+	if p.stopFunc != nil {
+		p.stopFunc()
+	}
 	return nil
 }
 
