@@ -14,19 +14,31 @@ import (
 
 func main() {
     // simple
-	prog.NewProgram(context.Background(), func() {
-		log.Println("Main")
-	}).Run()
+	prog.NewProgram(
+		context.Background(),
+		prog.WithMainFunc(func() error {
+			log.Println("hello world")
+			return nil
+		}),
+	).Run()
 
     // with init and stop
-	prog.NewProgram(context.Background(), func() error {
-		log.Println("Main")
-		return nil
-	}).Init(func() error {
-		log.Println("Init")
-		return nil
-	}).Stop(func() {
-		log.Println("Stop")
-	}).Run()
+	prog.NewProgram(
+		context.Background(),
+		// main func
+		func() error {
+			log.Println("hello world")
+			return nil
+		},
+		// init func
+		prog.WithInit(func() error {
+			log.Println("init")
+			return nil
+		}),
+		// stop func
+		prog.WithStopFunc(func() {
+			log.Println("stop")
+		}),
+	).Run()
 }
 ```
